@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CurrencyConverter" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/button_bg</item>
+        <item name="colorPrimaryDark">@color/button_bg</item>
+        <item name="colorAccent">@color/button_bg</item>
+        <item name="android:windowBackground">@color/default_bg</item>
+        <item name="android:dropDownListViewStyle">@style/SpinnerStyle</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="@style/Widget.AppCompat.Spinner.DropDown">
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:divider">@color/edit_text</item>
+    </style>
+</resources>
