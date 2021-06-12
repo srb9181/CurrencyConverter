@@ -1,14 +1,14 @@
 package com.srb9181.currencyconverter.ui.adapters
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.srb9181.currencyconverter.R
 import com.srb9181.currencyconverter.data.local.CurrencyConversionRates
 import com.srb9181.currencyconverter.databinding.ItemCurrencyBinding
+import com.srb9181.currencyconverter.util.FunctionUtils.getNumberInText
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.*
 
 class CurrencyListAdapter(
@@ -38,7 +38,7 @@ class CurrencyListAdapter(
             itemCurrencyBinding.tvCurrencySource.text = item.currencySource
             itemCurrencyBinding.tvCurrencyResult.text = item.currencyCode
             itemCurrencyBinding.tvSourceRate.text = item.currencySourceRate.toString()
-            itemCurrencyBinding.tvRate.text =BigDecimal(item.currencyRate).setScale(5,RoundingMode.HALF_EVEN).toPlainString()// String.format("%.3f",  item.currencyRate)
+            itemCurrencyBinding.tvRate.text =BigDecimal(item.currencyRate).getNumberInText() // String.format("%.3f",  item.currencyRate)
             setOnClickListener {
                 onItemClickListener.onItemClick(item)
             }

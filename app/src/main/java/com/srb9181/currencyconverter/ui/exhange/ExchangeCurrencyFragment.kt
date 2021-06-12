@@ -4,16 +4,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.srb9181.currencyconverter.R
 import com.srb9181.currencyconverter.data.local.CurrencyConversionRates
 import com.srb9181.currencyconverter.databinding.FragmentExchangeBinding
 import com.srb9181.currencyconverter.ui.home.CurrencyViewModel
-import com.srb9181.currencyconverter.util.Constants
 import com.srb9181.currencyconverter.util.FunctionUtils
-import java.math.MathContext
+import com.srb9181.currencyconverter.util.FunctionUtils.getNumberInText
 import java.math.RoundingMode
 
 class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
@@ -86,9 +84,10 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
                 position: Int, id: Long
             ) {
                 val selectedCurrency = currencyConversionRatesList[position]
+                if(sourceCurrencyCode!=selectedCurrency.currencyCode)
+                    setCurrencyInUi()
                 sourceCurrencyRate = selectedCurrency.currencyRate
                 sourceCurrencyCode = selectedCurrency.currencyCode
-                setCurrencyInUi()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -101,9 +100,10 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
                 position: Int, id: Long
             ) {
                 val selectedCurrency = currencyConversionRatesList[position]
+                if(resultCurrencyCode!=selectedCurrency.currencyCode)
+                    setCurrencyInUi()
                 resultCurrencyRate = selectedCurrency.currencyRate
                 resultCurrencyCode = selectedCurrency.currencyCode
-                setCurrencyInUi()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
@@ -112,7 +112,8 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
 
     private fun setCurrencyInUi() {
         binding?.etSourceCurrency?.let {
-            it.setText((1.toBigDecimal().multiply(it.text.toString().toBigDecimal()).setScale(2,RoundingMode.HALF_EVEN).toPlainString()))
+            val number =(1.toBigDecimal().multiply(it.text.toString().toBigDecimal()))
+            it.setText(number.getNumberInText())
         }
 
 
@@ -120,19 +121,20 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
             if(sourceCurrencyCode==resultCurrencyCode){
                 it.setText(binding!!.etSourceCurrency.text.toString())
             }
-            else if(resultCurrencyCode==Constants.BTC){
-                it.setText((1.0.toBigDecimal().divide(sourceCurrencyRate.toBigDecimal(),2,RoundingMode.HALF_DOWN)).multiply(resultCurrencyRate.toBigDecimal()).multiply(
-                    binding!!.etSourceCurrency.text.toString().toBigDecimal()).setScale(12  ,RoundingMode.HALF_EVEN).toPlainString())
+            else {
+                val number =(1.0.toBigDecimal().divide(sourceCurrencyRate.toBigDecimal(),5,RoundingMode.DOWN)).multiply(resultCurrencyRate.toBigDecimal().setScale(5,RoundingMode.DOWN)).multiply(
+                    binding!!.etSourceCurrency.text.toString().toBigDecimal().setScale(5,RoundingMode.DOWN))
+                it.setText(number.getNumberInText())
             }
-            else
-                it.setText((1.0.toBigDecimal().divide(sourceCurrencyRate.toBigDecimal(),2,RoundingMode.HALF_DOWN)).multiply(resultCurrencyRate.toBigDecimal()).multiply(
-                        binding!!.etSourceCurrency.text.toString().toBigDecimal()).setScale(2,RoundingMode.HALF_EVEN).toPlainString())
         }
+
     }
 
     fun setCurrencyData(currencyConversionRates: CurrencyConversionRates){
         resultCurrencyRate = currencyConversionRates.currencyRate
         resultCurrencyCode = currencyConversionRates.currencyCode
+        sourceCurrencyCode =currencyConversionRates.currencySource
+        sourceCurrencyRate= currencyConversionRates.currencySourceRate
         setAdapterData()
     }
 
