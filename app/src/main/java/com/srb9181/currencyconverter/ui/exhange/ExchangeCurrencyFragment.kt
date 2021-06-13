@@ -18,8 +18,8 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
 
     private var binding: FragmentExchangeBinding? = null
     private val currencyViewModel by activityViewModels<CurrencyViewModel>()
-    private lateinit var currenciesList:MutableList<CurrencyConversionRates>
-    private lateinit var currenciesCodeList:MutableList<String>
+    private lateinit var currenciesList:List<CurrencyConversionRates>
+    private lateinit var currenciesCodeList:List<String>
     var sourceCurrencyCode = "USD"
     var sourceCurrencyRate = 1.0
     var resultCurrencyRate = 0.0
@@ -62,8 +62,8 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
     }
 
     private fun setDataInUi(currencyConversionRatesList: List<CurrencyConversionRates>) {
-        currenciesList= currencyConversionRatesList.toMutableList()
-        currenciesCodeList =currenciesList.map { it.currencyCode }.toMutableList()
+        currenciesList= currencyConversionRatesList
+        currenciesCodeList =currenciesList.map { it.currencyCode }
         val sourceCurrArrayAdapter = ArrayAdapter<String>(requireContext(),R.layout.spinner_item_currency,currenciesList.map { it.currencyCode })
         sourceCurrArrayAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown)
         val resultCurrArrayAdapter = ArrayAdapter<String>(requireContext(),R.layout.spinner_item_currency,currenciesList.map { it.currencyCode })
@@ -122,8 +122,8 @@ class ExchangeCurrencyFragment:Fragment(R.layout.fragment_exchange) {
                 it.setText(binding!!.etSourceCurrency.text.toString())
             }
             else {
-                val number =(1.0.toBigDecimal().divide(sourceCurrencyRate.toBigDecimal(),5,RoundingMode.DOWN)).multiply(resultCurrencyRate.toBigDecimal().setScale(5,RoundingMode.DOWN)).multiply(
-                    binding!!.etSourceCurrency.text.toString().toBigDecimal().setScale(5,RoundingMode.DOWN))
+                val number =(1.0.toBigDecimal().divide(sourceCurrencyRate.toBigDecimal(),5,RoundingMode.HALF_EVEN)).multiply(resultCurrencyRate.toBigDecimal()).multiply(
+                    binding!!.etSourceCurrency.text.toString().toBigDecimal().setScale(5,RoundingMode.HALF_EVEN))
                 it.setText(number.getNumberInText())
             }
         }

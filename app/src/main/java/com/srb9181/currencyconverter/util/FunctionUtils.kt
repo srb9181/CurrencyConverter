@@ -10,10 +10,7 @@ import kotlin.math.log10
 object FunctionUtils {
 
     fun isTimeToRefresh(patientRefreshApiDate: Long, PATIENT_API_REFRESH_OFFSET: Int): Boolean {
-        val cal= Calendar.getInstance()
-        cal.timeInMillis = patientRefreshApiDate
-        cal.add(Calendar.HOUR_OF_DAY,PATIENT_API_REFRESH_OFFSET )
-        return (System.currentTimeMillis()>cal.timeInMillis).also { cal.clear() }
+        return (System.currentTimeMillis()-patientRefreshApiDate>PATIENT_API_REFRESH_OFFSET)
     }
 
     fun getLocalCurrency(): String = Currency.getInstance(Locale.getDefault()).currencyCode
@@ -23,13 +20,17 @@ object FunctionUtils {
     }
 
     fun getScale(number: BigDecimal): Int {
-        return if (number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0)
-            0
-        else log10(1 / (number.toDouble() / 1)).toInt() + 2
+        return when {
+            number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 -> 2
+            number.compareTo(Double.MAX_VALUE.toBigDecimal())==-1 -> log10(1 / (number.toDouble() % 1)).toInt()+2
+            else -> 8
+        }
     }
 
+
     fun BigDecimal.getNumberInText():String{
-        val scale =getScale(this)
+        this.precision()
+        val scale = getScale(this)
       return  this.stripTrailingZeros().setScale(scale, RoundingMode.HALF_EVEN).toPlainString()
     }
 
